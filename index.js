@@ -5,6 +5,8 @@ const Database=require("./database");
 //Initialization
 const ourApp=express();
 
+ourApp.use(express.json());//This line required for POST request because the data is in JSON format.
+
 ourApp.get("/",(request,response)=>{
     response.json({message: "request is working!!!"});
 });
@@ -123,5 +125,40 @@ ourApp.get("/publication/b/:book",(req,res)=>{
         (publication)=>publication.books.includes(req.params.book)
     );
     return res.json({publication:getPublication}); 
+});
+//Route   -/book/new
+//Des     -add new book
+//Access  -Public
+//Method  -post
+//Params  -none
+ourApp.post("/book/new",(req,res)=>{
+    console.log(req.body); //Data alone is added
+    return res.json({message: 'Book Added Successfully'});
+});
+//Route   -/author/new
+//Des     -add new author
+//Access  -Public
+//Method  -post
+//Params  -none
+ourApp.post("/author/new",(req,res)=>{
+    //Data added with its key, as it is in database.
+    //newAuthor is the key, we add data with this key in JSON content.And do the following lines.
+    const {newAuthor} =req.body;// const newAuthor=req.body.newAuthor; This can be used.
+    //Those curly braces above is known as destructuring.
+    //This kind of destructruting is helpful when we add more than one key.
+    // eg: const {newAuthor,bookData}=req.body; //Two variables(keys)
+    console.log(newAuthor);                    
+    return res.json({message: 'author Added Successfully'});
+});
+//Route   -/publication/new
+//Des     -add new publication
+//Access  -Public
+//Method  -post
+//Params  -none
+ourApp.post("/publication/new",(req,res)=>{
+    const {newPublication1,newPublication2}=req.body;
+    console.log(newPublication1);
+    console.log(newPublication2);
+    return res.json({message: 'Publication Added Successfully'});
 });
 ourApp.listen(4000,()=>console.log("Server is running"));
