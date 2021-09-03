@@ -125,14 +125,15 @@ ourApp.get("/publication/b/:book",(req,res)=>{
         (publication)=>publication.books.includes(req.params.book)
     );
     return res.json({publication:getPublication}); 
-});
+});          
+                              //POST
 //Route   -/book/new
 //Des     -add new book
 //Access  -Public
 //Method  -post
 //Params  -none
 ourApp.post("/book/new",(req,res)=>{
-    console.log(req.body); //Data alone is added
+    Database.Book.push(req.body); //Data alone is added
     return res.json({message: 'Book Added Successfully'});
 });
 //Route   -/author/new
@@ -141,14 +142,15 @@ ourApp.post("/book/new",(req,res)=>{
 //Method  -post
 //Params  -none
 ourApp.post("/author/new",(req,res)=>{
-    //Data added with its key, as it is in database.
-    //newAuthor is the key, we add data with this key in JSON content.And do the following lines.
+    //Data added with its objectname, as it is in database.
+    //newAuthor is the objectname, we add data with this objectname in JSON content.And do the following lines.
     const {newAuthor} =req.body;// const newAuthor=req.body.newAuthor; This can be used.
     //Those curly braces above is known as destructuring.
-    //This kind of destructruting is helpful when we add more than one key.
-    // eg: const {newAuthor,bookData}=req.body; //Two variables(keys)
+    //This kind of destructruting is helpful when we add more than one objectname.
+    // eg: const {newAuthor,bookData}=req.body; //Two variables(objectNames)
+    Database.Author.push(newAuthor);
     console.log(newAuthor);                    
-    return res.json({message: 'author Added Successfully'});
+    return res.json(Database.Author);
 });
 //Route   -/publication/new
 //Des     -add new publication
@@ -157,8 +159,72 @@ ourApp.post("/author/new",(req,res)=>{
 //Params  -none
 ourApp.post("/publication/new",(req,res)=>{
     const {newPublication1,newPublication2}=req.body;
+    Database.Publication.push(newPublication1);
+    Database.Publication.push(newPublication2);
     console.log(newPublication1);
     console.log(newPublication2);
-    return res.json({message: 'Publication Added Successfully'});
+    return res.json(Database.Publication);
 });
+                                //PUT
+//Route   -/book/update
+//Des     -update any details of the book
+//Access  -Public
+//Method  -put
+//Params  -ISBN
+ourApp.put("/book/update/:isbn",(req,res)=>{
+    const {updatedBook}=req.body;
+    const {isbn}=req.params;
+    const book=Database.Book.map((book)=>{
+        if(book.ISBN===isbn){
+            return {...book, ...updatedBook};
+        }
+       return book;
+    });
+    return res.json(book);
+});
+//Updating Author in Book
+ourApp.put("/bookauthor/update/:isbn",(req,res)=>{
+    const {newAuthor}=req.body;
+    const {isbn}=req.params;
+    const book=Database.Book.map((book)=>{
+        if(book.ISBN===isbn){
+            if(!book.authors.includes(newAuthor)){
+                return book.authors.push(newAuthor);
+            }
+            return book; //if the 'if' is false, atleast already existing book should be returned, so 'return book'.
+        }
+       return book;// similarly as above comment
+    });
+    //As we update the Author in book, it is necessary to update that book in Author too.
+    Database.Author.forEach((author)=>{
+        if(author.id===newAuthor){
+            if(!author.books.includes(isbn)){
+                return author.books.push(isbn);
+
+            }
+            return author
+        }
+        return author;
+    });
+    return res.json({book: Database.Book,author: Database.Author});
+});
+//Route   -/author/update
+//Des     -update any details of the author
+//Access  -Public
+//Method  -put
+//Params  -id
+ourApp.put("/author/update/:id",(req,res)=>{
+    const {updatedAuthor}=req.body;
+    const{id}=req.params;
+
+    const author= Database.Author.map((author)=>{
+        if(author.id===parseInt(id)){
+            return {...author, ...updatedAuthor}
+        }
+        return author
+    });
+    return res.json(author);
+});
+
+
 ourApp.listen(4000,()=>console.log("Server is running"));
