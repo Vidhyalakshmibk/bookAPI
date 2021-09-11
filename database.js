@@ -6,6 +6,7 @@
 // Documents have a key value pair (similar to JSON).
 // No specific schema required before hand line SQL database.
 // SO structuring the data is easier in mongoDB
+// Scalability
 
 let Book = [
     {

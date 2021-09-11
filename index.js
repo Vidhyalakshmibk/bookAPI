@@ -1,7 +1,16 @@
-const { request } = require("express");
+//const { request } = require("express");
 const express=require("express");
+const mongoose = require('mongoose');
+require("dotenv").config();
 // database
 const Database=require("./database");
+//MongoDB
+const mongo_uri="mongodb+srv://Vidhyalakshmi:VidDB@bookapi.frrph.mongodb.net/BookAPI?retryWrites=true&w=majority";
+
+mongoose.connect(
+    "mongodb+srv://Vidhyalakshmi:VidDB@bookapi.frrph.mongodb.net/BookAPI?retryWrites=true&w=majority"
+).then(()=>console.log("connection established!")).catch((err)=>{console.log(err);
+});
 //Initialization
 const ourApp=express();
 
